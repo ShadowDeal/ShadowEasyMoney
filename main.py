@@ -54,5 +54,5 @@ async def buy_scheme(callback_query: types.CallbackQuery):
             invoice_url = result["data"]["invoice_url"]
             await callback_query.message.answer(f"Ссылка на оплату: {invoice_url}")
 
-if name == "__main__":
+if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
