@@ -34,8 +34,8 @@ async def buy_scheme(callback_query: types.CallbackQuery):
         "amount": 500,
         "currency": "RUB",
         "comment": f"user_{user_id}",
-        "success_url": "https://t.me/shadowdealbot",
-        "fail_url": "https://t.me/shadowdealbot"
+        "success_url": "https://t.me/Easy_shadow_moneybot",
+        "fail_url": "https://t.me/Easy_shadow_moneybot"
     }
 
     headers = {
