@@ -1,4 +1,3 @@
-
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -13,6 +12,7 @@ FILE_PATH = "sxema_keshbek_shadowdeal_v2.pdf"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+
 logging.basicConfig(level=logging.INFO)
 
 @dp.message_handler(commands=["start"])
@@ -28,6 +28,7 @@ async def start(message: types.Message):
 @dp.callback_query_handler(lambda c: c.data == "buy")
 async def buy_scheme(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
+
     payload = {
         "shop_id": SHOP_ID,
         "amount": 500,
@@ -43,18 +44,15 @@ async def buy_scheme(callback_query: types.CallbackQuery):
     }
 
     async with aiohttp.ClientSession() as session:
-        async with session.post("https://api.lava.ru/business/invoice", headers=headers, json=payload) as resp:
-            data = await resp.json()
-            url = data.get("data", {}).get("url")
-            if url:
-                await bot.send_message(user_id, f"Оплати по ссылке:\n{url}\n\nПосле оплаты схема придёт автоматически.")
-            else:
-                await bot.send_message(user_id, "Ошибка при генерации ссылки. Попробуй позже.")
+        async with session.post("https://api.lava.ru/invoice", json=payload, headers=headers) as response:
+            result = await response.json()
 
-@dp.message_handler(commands=["send_file"])
-async def send_file(message: types.Message):
-    with open(FILE_PATH, "rb") as f:
-        await message.answer_document(types.InputFile(f, filename="sxema_shadowdeal.pdf"))
+            if response.status != 200 or "data" not in result:
+                await callback_query.message.answer(f"Ошибка при генерации: {result}")
+                return
 
-if __name__ == "__main__":
+            invoice_url = result["data"]["invoice_url"]
+            await callback_query.message.answer(f"Ссылка на оплату: {invoice_url}")
+
+if name == "__main__":
     executor.start_polling(dp, skip_updates=True)
