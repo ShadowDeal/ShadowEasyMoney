@@ -52,5 +52,5 @@ async def buy_scheme(callback_query: types.CallbackQuery):
             else:
                 await bot.send_message(user_id, f"Ошибка при генерации: {response_data}")
 
-if name == "__main__":
+if __name__ == "__main__":
     executor.start_polling(dp)
